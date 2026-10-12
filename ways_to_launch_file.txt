@@ -1,0 +1,7 @@
+1. direct to the folder cd...
+2. py -m venv venv
+3. Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+4. venv\Scripts\Activate.ps1
+5. pip install --upgrade pip (if required)
+6. pip install streamlit plotly pandas "numpy<2.0.0" statsmodels requests geopy (if required)
+7. streamlit run app.py
