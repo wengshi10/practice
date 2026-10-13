@@ -1,0 +1,4 @@
+work/
+__pycache__/
+dist/metadata.json
+dist/transactions.json
