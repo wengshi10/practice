@@ -13,7 +13,7 @@ async def run():
   await page.wait_for_function('!!window.HDBAtlas',timeout=60000)
   await page.screenshot(path=str(ROOT/'work'/'desktop.png'),full_page=False)
   print('INITIAL',await page.evaluate('({count:HDBAtlas.filtered.length,stats:HDBAtlas.stats(HDBAtlas.filtered),rows:HDBAtlas.rows.length,mapSymbols:document.querySelectorAll("#priceMap circle").length})'))
-  await page.select_option('#year','2025');await page.select_option('#type','3');await page.select_option('#town','24')
+  await page.select_option('#year','2025',force=True);await page.select_option('#type','3',force=True);await page.select_option('#town','24',force=True)
   print('FILTER',await page.evaluate('({count:HDBAtlas.filtered.length,stats:HDBAtlas.stats(HDBAtlas.filtered),expected:HDBAtlas.rows.filter(r=>2017+Math.floor(r[0]/12)===2025&&r[2]===3&&r[1]===24).length})'))
   await page.click('#reset')
   await page.locator('#lease').scroll_into_view_if_needed();await page.wait_for_timeout(700)

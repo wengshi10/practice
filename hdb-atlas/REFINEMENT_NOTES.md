@@ -40,3 +40,18 @@ Open `http://localhost:8000/`. The geocoder caches results and resumes if interr
 The accessibility comparison has a separate 2025/2026 year selector, defaulting to the full 2025 year, and its own building-age selector. It shares town, flat-type and property-range filters with the rest of the webpage. It uses current address coordinates and the uploaded amenity snapshots. It cannot reconstruct historical opening/closure dates, walking routes, a causal accessibility premium, or an isolated offset to depreciation.
 
 Town price symbols remain HDB town summaries anchored to matching planning-area names, as explicitly labelled; they have not been silently converted into a planning-area choropleth. Schools retain their uploaded DGP classifications for inventories while markers and nearest-school distances use verified address coordinates.
+
+## Follow-up Word document edits
+
+- Remove the masthead subtitle, shorten the hero copy, rename the introduction and chart sections, and move descriptions beneath titles.
+- Enable multiple period, flat-type and town selections, including links preserving multiple selections.
+- Combine 1 ROOM and MULTI-GENERATION as Others in visual analyses without rewriting the raw JSON or original CSV export labels.
+- Move the vertical trend legend beside the plot and selected-series extrema below it.
+- Add a least-squares scatterplot line, using all eligible filtered records, with fit controls and R².
+- Label medians on height and accessibility boxplots.
+- Display all towns in two matrix panels without an inner vertical scrollbar.
+- Expand comparison years to 2017–2026 and All years; retain the later-snapshot limitation and match sale year in comparable strata.
+- Simplify the ageing/accessibility default to equal-size points and retain sales-count sizing as an option.
+- Increase font sizes and use black light-mode explanatory text, with chart titles larger than axis titles and axis titles larger than ticks.
+
+These are local review notes; they do not authorize a push. Existing prepared data and geocoding caches remain compatible, so this UI update does not require another OneMap run.

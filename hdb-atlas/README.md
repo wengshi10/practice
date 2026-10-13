@@ -23,7 +23,7 @@ Open **http://127.0.0.1:8000/**. Serve the files over HTTP rather than opening `
 5. Town × flat-type heatmap, plus model comparisons.
 6. MRT exits, hawker locations, primary-school markers, common-cohort amenity-distance boxplots, and lease/accessibility bubbles with a linked block map.
 
-Shared period, flat-type and town filters update exact statistics, animated charts and CSV export. The context ranking retains all towns. The matrix retains all town/type combinations and highlights the selection. The time chart retains the history up to the selected year. The amenity inventory follows directly named selected towns unless a planning area is explicitly chosen. Its points remain snapshot records, independently of the price period.
+Shared period, flat-type and town filters support multiple selections and update exact statistics, animated charts and CSV export. The context ranking retains all towns. The matrix retains all town/type combinations and highlights the selection. The time chart respects selected periods, leaves gaps between unselected years, and uses a reveal cursor for playback without changing the filtered transaction cohort. The amenity inventory follows directly named selected towns unless a planning area is explicitly chosen. Its points remain snapshot records, independently of the price period.
 
 Dark mode, responsive layouts, scroll entrances, chart transitions, hover details, map pan/zoom, timeline playback and a six-minute presentation view are included. Chapter 6 has presentation subviews for the amenity map, price/distance distributions and ageing/accessibility bubbles. Presentation arrow keys move between chapters; the timed tour can pause or resume. This is a webpage, not a generated video. Narration must be recorded by the students themselves.
 
@@ -40,10 +40,10 @@ Dark mode, responsive layouts, scroll entrances, chart transitions, hover detail
 - 179 primary schools retain their recorded DGP area classification for inventories; verified geocoded addresses provide individual map markers. The school file contains 337 schools overall.
 - HDB and school coordinates are absent in the raw uploads. With explicit user approval, OneMap Search resolves their addresses to WGS84 and SVY21 coordinates. Exact block/road matches and school postal-code matches are checked; materially ambiguous addresses are not guessed. All geocoded datasets and caches stay local.
 - Nearest-amenity distances are Euclidean in EPSG:3414, not walking routes. The distance selector preserves one common complete-coordinate cohort across MRT exits, primary schools and existing/interim hawkers. Under-construction hawkers are excluded from distance calculations.
-- The comparison uses a separate 2025/2026 year selector and building-age selector, while sharing town, flat type and property-range filters with the historical charts. 2026 is partial.
+- The comparison uses a separate 2017–2026 or all-years selector and building-age selector, while sharing town, flat type and property-range filters with the historical charts. 2026 is partial.
 - Tukey boxplots use Q1, median, Q3, and whiskers ending at observed values within 1.5×IQR fences. All outlier counts are exact; at most 160 outlier marks per group are drawn for clarity.
-- Lease/accessibility bubbles aggregate 5-year lease groups × distance bands, require at least five sales, use median lease and price/m², and encode transaction count by bubble area.
-- The within-comparable-group contrast matches town, flat type, 10-year building-age bands and 20m² floor-area bands. Strata require at least five near (<400m) and five far (≥1200m) sales. The displayed contrast is exp(weighted average of log near/far median-price ratios) − 1, weighted by the smaller count in each stratum. This is descriptive, not causal.
+- Lease/accessibility bubbles aggregate 5-year lease groups × distance bands, require at least five sales, use median lease and price/m², and use equal-size points by default, with optional transaction-count sizing by point area.
+- The within-comparable-group contrast matches sale year, town, flat type, 10-year building-age bands and 20m² floor-area bands. Strata require at least five near (<400m) and five far (≥1200m) sales. The displayed contrast is exp(weighted average of log near/far median-price ratios) − 1, weighted by the smaller count in each stratum. This is descriptive, not causal.
 - Amenities are later snapshots and do not reconstruct historical accessibility.
 - No causal effects, inflation adjustment, repeat-sales indices, or predictions are claimed.
 
@@ -91,3 +91,7 @@ These links document the uploaded datasets' provenance; no replacement datasets 
 - [Hawker centres](https://data.gov.sg/datasets?agencies=National+Environment+Agency+(NEA)&resultId=d_4a086da0a5553be1d89383cd90d07ecd)
 - [General information of schools](https://data.gov.sg/datasets?query=moe+general+information+of+school&resultId=d_688b934f82c1059ed0a6993d2a829089)
 - [OneMap](https://www.onemap.gov.sg/) — user-approved address-coordinate lookup only.
+
+## Latest requested usability edits
+
+The masthead uses only HDB Singapore; the hero names SC4024 Data Visualisation. Flat types 1 ROOM and MULTI-GENERATION are grouped as Others throughout the interactive analyses, while CSV exports preserve their original names. The vertical trend legend supports selection, and visible monthly extrema are calculated only from selected categories. A least-squares best-fit line uses every eligible filtered sale, not just sampled scatter dots; the displayed R² is descriptive. Boxplot medians are labelled directly. The town/type matrix uses two side-by-side panels, showing all 26 towns without an internal vertical scrollbar. Earlier accessibility years compare historical sale prices with later amenity snapshots, so they do not reconstruct historical availability. Typography follows chart title > axis title > numeric tick label, and light-mode explanatory text is black.
