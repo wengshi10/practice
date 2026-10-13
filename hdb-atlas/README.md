@@ -1,10 +1,10 @@
 # What Makes an HDB Flat Expensive?
 
-**HDB Atlas** is a standalone interactive webpage telling the story of Singapore resale housing. It is built from the six supplied datasets, independently of earlier branch work. No framework, build step, account, API key, external basemap, geocoder, CDN, or runtime internet connection is required.
+**HDB Singapore** is a standalone interactive webpage telling the story of Singapore resale housing. It is built from the six supplied datasets, independently of earlier branch work. The webpage has no framework, CDN, external basemap or runtime internet dependency. User-approved OneMap geocoding enriches the uploaded block and school addresses during preparation; prices and amenity records still come only from the uploads.
 
 ## Open the webpage
 
-The public branch includes source only. Before opening the page, place your six uploaded datasets in a local folder and run `python scripts/prepare_data.py /path/to/uploaded-datasets` to generate the private JSON assets. These assets are intentionally ignored by Git.
+The public GitHub branch contains source only. Keep your six original CSV/GeoJSON files locally in `datasets`, then run `python scripts/prepare_data.py datasets` before starting the server. Run the coordinate preparation commands below to enable school markers and the new accessibility charts. All uploaded and derived data assets remain excluded from Git.
 
 Python 3 is sufficient:
 
@@ -16,16 +16,16 @@ Open **http://127.0.0.1:8000/**. Serve the files over HTTP rather than opening `
 
 ## Six connected chapters
 
-1. Monthly price trends, price per square metre, and indexed growth.
+1. Monthly price trends, price per square metre, and annual percentage-growth bars relative to 2017.
 2. Singapore planning boundaries with town price symbols and a linked ranking.
 3. Transaction scatterplot: lease, floor area, and building age; horizontal drag selects a property range.
 4. Storey-band price distributions, with a building-age selector.
 5. Town × flat-type heatmap, plus model comparisons.
-6. MRT exits, hawker locations and primary-school area inventories.
+6. MRT exits, hawker locations, primary-school markers, common-cohort amenity-distance boxplots, and lease/accessibility bubbles with a linked block map.
 
 Shared period, flat-type and town filters update exact statistics, animated charts and CSV export. The context ranking retains all towns. The matrix retains all town/type combinations and highlights the selection. The time chart retains the history up to the selected year. The amenity inventory follows directly named selected towns unless a planning area is explicitly chosen. Its points remain snapshot records, independently of the price period.
 
-Dark mode, responsive layouts, scroll entrances, chart transitions, hover details, map pan/zoom, timeline playback and a six-minute presentation view are included. Presentation arrow keys move between chapters; the timed tour can pause or resume. This is a webpage, not a generated video. Narration must be recorded by the students themselves.
+Dark mode, responsive layouts, scroll entrances, chart transitions, hover details, map pan/zoom, timeline playback and a six-minute presentation view are included. Chapter 6 has presentation subviews for the amenity map, price/distance distributions and ageing/accessibility bubbles. Presentation arrow keys move between chapters; the timed tour can pause or resume. This is a webpage, not a generated video. Narration must be recorded by the students themselves.
 
 ## Data integrity
 
@@ -34,11 +34,17 @@ Dark mode, responsive layouts, scroll entrances, chart transitions, hover detail
 - Transaction-level price/m² is calculated before taking medians.
 - All summaries use every filtered row. Only scatter dots are sampled, deterministically, to at most 2,400. The displayed denominator and methodology disclose this.
 - Building age uses completion year and sale year. Storey groups use the midpoint of the recorded storey range with nonoverlapping thresholds.
-- Sparse time-series months are not interpolated across missing observations.
+- Sparse time-series months are not interpolated across missing observations. Timeline playback animates a reveal clip over a stable full-history path and scale, preserving prior history instead of redrawing it. The monthly axis uses rounded ticks; extrema are annotated. Growth bars show cumulative annual-median change versus 2017, and 2026 has a dashed outline.
 - 55 planning polygons retain holes and multipolygons. Price symbols anchor HDB town names to matching planning areas; they do **not** spatially assign sales. Central Area and Kallang/Whampoa remain in the ranking without map symbols.
 - 613 MRT exit records and 129 hawker records are assigned to areas by point-in-polygon. Exit counts are not unique station counts; hawkers retain all uploaded statuses.
-- 179 primary schools are classified by their recorded DGP area. The school dataset contains 337 schools overall. No school point locations are invented.
-- HDB and school coordinates are absent, so amenity distance premiums cannot be estimated from these files alone. No external enrichment is used. Amenities are later snapshots and do not reconstruct historical accessibility.
+- 179 primary schools retain their recorded DGP area classification for inventories; verified geocoded addresses provide individual map markers. The school file contains 337 schools overall.
+- HDB and school coordinates are absent in the raw uploads. With explicit user approval, OneMap Search resolves their addresses to WGS84 and SVY21 coordinates. Exact block/road matches and school postal-code matches are checked; materially ambiguous addresses are not guessed. All geocoded datasets and caches stay local.
+- Nearest-amenity distances are Euclidean in EPSG:3414, not walking routes. The distance selector preserves one common complete-coordinate cohort across MRT exits, primary schools and existing/interim hawkers. Under-construction hawkers are excluded from distance calculations.
+- The comparison uses a separate 2025/2026 year selector and building-age selector, while sharing town, flat type and property-range filters with the historical charts. 2026 is partial.
+- Tukey boxplots use Q1, median, Q3, and whiskers ending at observed values within 1.5×IQR fences. All outlier counts are exact; at most 160 outlier marks per group are drawn for clarity.
+- Lease/accessibility bubbles aggregate 5-year lease groups × distance bands, require at least five sales, use median lease and price/m², and encode transaction count by bubble area.
+- The within-comparable-group contrast matches town, flat type, 10-year building-age bands and 20m² floor-area bands. Strata require at least five near (<400m) and five far (≥1200m) sales. The displayed contrast is exp(weighted average of log near/far median-price ratios) − 1, weighted by the smaller count in each stratum. This is descriptive, not causal.
+- Amenities are later snapshots and do not reconstruct historical accessibility.
 - No causal effects, inflation adjustment, repeat-sales indices, or predictions are claimed.
 
 ## Reproduce the preparation
@@ -51,10 +57,37 @@ python scripts/prepare_data.py /path/to/uploaded-datasets
 
 The script uses the Python standard library only. It writes `dist/metadata.json` (including SHA-256 source fingerprints) and the complete coded `dist/transactions.json`. `dist/app.js` documents the code-column order through metadata. The original assignment PDF and Word template inform the presentation structure and are not analytic data.
 
+## Add approved address coordinates and accessibility analysis
+
+After generating the base JSON files, run:
+
+```sh
+python scripts/geocode_onemap.py --workers 4
+python scripts/build_accessibility.py
+```
+
+The first command calls OneMap Search using only uploaded school postal codes and HDB block addresses, validates returned address fields, and caches results in `work/onemap-cache.json`. It can take several minutes. Re-running resumes from the cache. `--retry-unmatched` retries unresolved addresses. OneMap may require an account/token or impose rate limits; an optional `ONEMAP_TOKEN` environment variable supplies a token without writing it to source. API authentication failures are not treated as coordinate matches.
+
+The second command generates `dist/accessibility.json` with matched school markers, block coordinates, nearest-amenity distances and coverage. Every derived JSON asset and coordinate cache is ignored by Git. Serve the webpage after both commands finish to load the new analysis. No coordinates are substituted for unresolved addresses.
+
+The full school match count, block match count, projection validation error and unmatched addresses are recorded in the generated file. The map and price charts still work without enrichment; the accessibility panels clearly show that verified coordinates are required.
+
 ## Verification
 
-JavaScript syntax checked with `node --check dist/app.js`. Browser validation covered exact count/median baselines, combined filtering against an independent predicate, scatter brushing and clearing, theme switching, methodology dialog, presentation navigation, and a 390px mobile viewport with no page-wide overflow. There were no browser JavaScript errors.
+JavaScript syntax checked with `node --check dist/app.js`. Browser validation covers exact count/median baselines, combined filtering against an independent predicate, scatter brushing and clearing, theme switching, methodology dialog, presentation navigation, and a 390px mobile viewport with no page-wide overflow. Refinement checks verify rounded ticks, annual growth values and dashed 2026 styling, preservation of the line path during playback, standard boxplot fences and outliers, all 179 school markers, identical amenity comparison cohort counts, linked distance selection and the new 720p presentation subviews. Nearest distances are independently checked with a KD-tree implementation to within the 0.005m rounding precision. There were no browser JavaScript errors.
 
 Optional Playwright checks are in `tests/browser_check.py`; edit the browser path and output paths for another machine. The production webpage has no dependency on Playwright.
 
 See `PRESENTATION_GUIDE.md` for a six-minute walkthrough and report notes.
+
+## Dataset references supplied in `infrormation.docx`
+
+These links document the uploaded datasets' provenance; no replacement datasets are fetched by the webpage.
+
+- [HDB resale transactions](https://data.gov.sg/datasets?query=resale+flat&resultId=d_8b84c4ee58e3cfc0ece0d773c8ca6abc)
+- [HDB Property Information](https://data.gov.sg/datasets?query=hdb+property&resultId=d_17f5382f26140b1fdae0ba2ef6239d2f)
+- [MRT station exits](https://data.gov.sg/datasets?query=lta+mrt&resultId=d_b39d3a0871985372d7e1637193335da5)
+- [URA planning-area boundaries](https://data.gov.sg/datasets?query=URA+Planning+Area+Boundaries&resultId=d_2cc750190544007400b2cfd5d7f53209)
+- [Hawker centres](https://data.gov.sg/datasets?agencies=National+Environment+Agency+(NEA)&resultId=d_4a086da0a5553be1d89383cd90d07ecd)
+- [General information of schools](https://data.gov.sg/datasets?query=moe+general+information+of+school&resultId=d_688b934f82c1059ed0a6993d2a829089)
+- [OneMap](https://www.onemap.gov.sg/) — user-approved address-coordinate lookup only.

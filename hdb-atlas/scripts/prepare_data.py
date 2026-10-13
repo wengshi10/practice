@@ -36,17 +36,19 @@ for name,k in [('LTAMRTStationExitGEOJSON.geojson','mrt'),('HawkerCentresGEOJSON
  features=json.load(open(find(name)))['features'];arr=[]
  for f in features:
   p=f['properties'];pt=f['geometry']['coordinates'];area=assign(pt)
-  arr.append({'name':p.get('STATION_NA',p.get('NAME')),'coordinates':pt,'area':area,'detail':p.get('EXIT_CODE',p.get('STATUS','')),'stalls':p.get('NUMBER_OF_COOKED_FOOD_STALLS')})
+  arr.append({'name':p.get('STATION_NA',p.get('NAME')),'coordinates':pt,'area':area,'detail':p.get('EXIT_CODE',p.get('STATUS','')),'stalls':p.get('NUMBER_OF_COOKED_FOOD_STALLS'),'svy21':[p['LANDXADDRESSPOINT'],p['LANDYADDRESSPOINT']] if 'LANDXADDRESSPOINT' in p else None})
  amen[k]=arr
 for f in geo['features']:
  p=f['properties'];f['properties']={'name':p['PLN_AREA_N'],'region':p['REGION_N']}
  # Keep boundary shapes, reduce excessive numeric precision; all rings retained.
  def roundcoords(a):return [round(v,6) for v in a] if isinstance(a[0],(int,float)) else [roundcoords(v) for v in a]
  f['geometry']['coordinates']=roundcoords(f['geometry']['coordinates'])
-primary=[{'name':r['school_name'],'area':r['dgp_code'].strip().upper(),'address':r['address'].strip(),'mrt':r['mrt_desc']} for r in schools if r['mainlevel_code']=='PRIMARY']
+primary=[{'name':r['school_name'],'area':r['dgp_code'].strip().upper(),'address':r['address'].strip(),'postal':r['postal_code'].strip().zfill(6),'mrt':r['mrt_desc']} for r in schools if r['mainlevel_code']=='PRIMARY']
 meta={'towns':towns,'types':types,'models':models,'blocks':[' '.join(b) for b in blocks],'count':len(rows),'matched':matched,'missing':missing,'start':min(r['month'] for r in raw),'end':max(r['month'] for r in raw),'amenities':amen,'schools':primary,'allSchoolCount':len(schools),'propertyCount':len(prop),'geo':geo,'columns':['monthIndex','townIndex','flatTypeIndex','blockIndex','storeyLow','storeyHigh','areaSqm','modelIndex','leaseMonths','resalePrice','yearCompleted','maxFloor'],'sources':[]}
 for name in ['Generalinformationofschools.csv','HDBPropertyInformation.csv','HawkerCentresGEOJSON.geojson','LTAMRTStationExitGEOJSON.geojson','MasterPlan2025PlanningAreaBoundaryNoSea.geojson','resale_flat_prices_based_on_registration_date_from_jan_2017_onwards.csv']:
  p=find(name);meta['sources'].append({'name':name,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()})
+# Block indices are derived from the current input files; stale enrichment must be rebuilt.
+(out/'accessibility.json').unlink(missing_ok=True)
 (out/'metadata.json').write_text(json.dumps(meta,separators=(',',':')))
 # JS loads JSON directly, no CDN and no gzip browser dependency.
 (out/'transactions.json').write_text(json.dumps(rows,separators=(',',':')))

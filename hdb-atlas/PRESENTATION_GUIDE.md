@@ -6,12 +6,12 @@ Introduce the title and both presenters briefly before the first explanation, wi
 
 | Time | Presenter | Chapter | Demonstration and message |
 | --- | --- | --- | --- |
-| 0:00–1:00 | Student 1 | Market | Introduce title/names, explain recorded sales, switch nominal price to indexed growth, play a few years. In the all-home lens, annual median price is $410,000 in 2017 and $628,000 in 2025, a 53.2% observed change. Housing composition matters; this is not a repeat-sales index. |
+| 0:00–1:00 | Student 1 | Market | Introduce title/names, explain recorded sales, switch nominal price to annual percentage-growth bars, play a few years. In the all-home lens, annual median price is $410,000 in 2017 and $628,000 in 2025, a 53.2% observed change. Housing composition matters; this is not a repeat-sales index. |
 | 1:00–2:00 | Student 1 | Location | Compare town price medians and transaction counts; click a town and clear it. Explain town symbols on corresponding planning areas and why they are not a transaction choropleth. |
 | 2:00–3:00 | Student 1 | Property | Compare all homes, then 4-room, then one town. Hover a sale; brush a lease range. Explain that controls make comparisons more meaningful and the scatter sample does not replace complete summary statistics. |
-| 3:00–4:00 | Student 2 | Height | Change building-age group. Explain median, middle 50%, percentile whiskers, and distribution overlap. Avoid calling raw differences causal floor premiums. |
+| 3:00–4:00 | Student 2 | Height | Change building-age group. Explain median, middle 50%, 1.5×IQR whiskers, outliers and distribution overlap. Avoid calling raw differences causal floor premiums. |
 | 4:00–5:00 | Student 2 | Mix | Select a matrix cell. Show how a location/type selection coordinates with the rest of the page. Mention that cells with few sales need care. In normal webpage mode, show model comparisons if useful. |
-| 5:00–6:00 | Student 2 | Neighbourhood | Toggle amenity layers and inspect a planning area. Distinguish exits from stations, and school area counts from coordinates. Explain missing block/school coordinates and later snapshots. Conclude: period, property and place must be read together. |
+| 5:00–6:00 | Student 2 | Neighbourhood | Show the school-marker layer, then switch the presentation subview to Price & distance and Ageing & access. Change the amenity selector while retaining the same transaction cohort. Explain straight-line distance, verified coordinate coverage, unmatched addresses and later snapshots. Observed associations do not establish causation. |
 
 ## Report template notes
 
@@ -21,7 +21,7 @@ Keep the report within the supplied two-page limit, use at least 11pt font, and 
 - **Contributions:** Record each student's actual design, analysis, implementation and narration work. Disclose external technical assistance according to course expectations.
 - **Novelty:** A coordinated property-range brush connecting the individual-sale view to complete summary charts; an explicit distinction between town price geography and planning-area amenity geography; a timed presentation view preserving the exploration controls.
 - **Technical challenges:** Reliable address-key joins, partial-year handling, exact filtered medians, performant sampled canvas plotting, polygon holes, snapshot amenity assignment and responsive SVG layouts.
-- **References:** List the six dataset filenames and actual source web links from your own dataset provenance. The uploads do not provide enough information to verify their original dataset URLs, so this project does not invent those links. Include the recommended outline and any tools/assistance used where appropriate.
+- **References:** List the six dataset filenames and actual source web links from your own dataset provenance. The source links supplied in infrormation.docx are included in README.md; cite OneMap for approved coordinate enrichment. Include the recommended outline and any tools/assistance used where appropriate.
 
 ## Useful verified baselines
 
