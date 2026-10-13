@@ -55,3 +55,17 @@ Town price symbols remain HDB town summaries anchored to matching planning-area 
 - Increase font sizes and use black light-mode explanatory text, with chart titles larger than axis titles and axis titles larger than ticks.
 
 These are local review notes; they do not authorize a push. Existing prepared data and geocoding caches remain compatible, so this UI update does not require another OneMap run.
+
+## Latest Word-document changes
+
+- Restore 1 ROOM and MULTI-GENERATION as separate categories; remove the combined Others category.
+- Update the monthly price, price/m² and percentage-growth titles and axis labels.
+- Remove the requested trend subtitles, and omit currency symbols from trend/scatter numeric ticks while preserving currency annotations.
+- Colour low summaries red and high summaries green.
+- Describe scatter colours as flat type, and update property-axis capitalization.
+- Use Building Age at Sale (years), preserving the actual measure rather than the document’s apparent Scale typo.
+- Capitalize the height-chart title and axes and remove its redundant subtitle.
+- Grey out unselected town symbols and ranking bars more clearly.
+- Remove the observed-difference and ageing-comparison narrative sections in all views.
+
+No re-geocoding or data rebuilding is needed for this code-only update.

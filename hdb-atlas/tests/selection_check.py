@@ -8,7 +8,7 @@ async def run():
   await page.goto('http://127.0.0.1:8000/',wait_until='networkidle');await page.wait_for_function('!!window.HDBAtlas');await page.wait_for_timeout(700)
   print('INITIAL',await page.evaluate('({types:HDBAtlas.meta.types,count:HDBAtlas.filtered.length})'))
   assert await page.evaluate('HDBAtlas.filtered.length')==242259
-  assert await page.evaluate('HDBAtlas.meta.types.includes("Others")&&!HDBAtlas.meta.types.includes("1 ROOM")')
+  assert await page.evaluate('HDBAtlas.meta.types.includes("1 ROOM")&&HDBAtlas.meta.types.includes("MULTI-GENERATION")&&!HDBAtlas.meta.types.includes("Others")')
   await page.screenshot(path=str(ROOT/'work/review-front.png'))
   for field,values in [('year',['2024','2025']),('type',['4 ROOM','5 ROOM']),('town',['Bedok','Yishun'])]:
    await page.locator('.multi-filter[data-filter="'+field+'"] summary').click()

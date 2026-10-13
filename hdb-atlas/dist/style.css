@@ -26,3 +26,6 @@ body.presentation #accessAdjustedStrip{display:none}body.presentation .age-card 
 @media(min-width:761px){.chapter-nav{top:var(--filter-height,104px)}}
 body.presentation svg .axis-label{font-size:18px}body.presentation .access-card svg .axis-label{font-size:18px}body.presentation #trend .axis-label{font-size:18px}.heat-panel .heat-label.type-label{font-size:12px}
 body.presentation .heat-panel .heat-cell{min-height:22px;padding:1px;font-size:11px}body.presentation .heat-panel .heat-label{font-size:11px}.dark .chapter-nav a{color:var(--muted)}
+
+/* Latest requested labels, extrema emphasis and original flat categories. */
+#trendExtrema .lowest-summary{color:#b42318}#trendExtrema .highest-summary{color:#08783f}#trendExtrema .lowest-summary b,#trendExtrema .highest-summary b{color:inherit}.dark #trendExtrema .lowest-summary{color:#ffaaa3}.dark #trendExtrema .highest-summary{color:#8ce0a5}.heat-panel .heat-label.type-label{white-space:normal;overflow-wrap:normal;hyphens:auto}.heat-panel .heat-label.type-label:last-child{overflow-wrap:anywhere}#accessReading[hidden],#ageAccessReading[hidden]{display:none!important}
