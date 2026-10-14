@@ -69,3 +69,15 @@ These are local review notes; they do not authorize a push. Existing prepared da
 - Remove the observed-difference and ageing-comparison narrative sections in all views.
 
 No re-geocoding or data rebuilding is needed for this code-only update.
+
+## Current Word-document copy revision
+
+- Update hero, navigation, KPI definitions, playback label and chapter-combination wording.
+- Box the trend legend and remove the quick-comparison controls.
+- Shorten height/matrix descriptions and simplify flat-model, amenity and property-map captions.
+- Use median total resale price for Flat Model bars so the measure agrees with the new caption.
+- Remove the requested main-page coverage, scope, comparable-group and closing action text; retain coordinate-coverage transparency inside the methodology dialog.
+- Update accessibility titles and axes and retain selection information only when a distance band is selected.
+- Replace Data & Methodology with the supplied coverage, measures, limitations and six-file list, correcting outliers to mean values beyond the whiskers.
+
+These changes remain code-only and require explicit approval before a GitHub push. Existing local prepared data and coordinate caches remain compatible.
