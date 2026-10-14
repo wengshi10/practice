@@ -9,7 +9,7 @@ async def run():
   page=await browser.new_page(viewport={'width':1440,'height':1000},device_scale_factor=1)
   errors=[]
   page.on('pageerror',lambda e:errors.append(str(e)))
-  await page.goto('http://127.0.0.1:8000/',wait_until='networkidle')
+  await page.goto(os.environ.get('HDB_PREVIEW_URL','http://127.0.0.1:8000/'),wait_until='networkidle')
   await page.wait_for_function('!!window.HDBAtlas',timeout=60000)
   await page.screenshot(path=str(ROOT/'work'/'desktop.png'),full_page=False)
   print('INITIAL',await page.evaluate('({count:HDBAtlas.filtered.length,stats:HDBAtlas.stats(HDBAtlas.filtered),rows:HDBAtlas.rows.length,mapSymbols:document.querySelectorAll("#priceMap circle").length})'))
@@ -28,7 +28,7 @@ async def run():
   await page.click('#pNext');await page.click('#pNext');await page.wait_for_timeout(600)
   print('PRESENT',await page.evaluate('({current:document.querySelector(".chapter.current").id,canvasWidth:document.querySelector("#scatter").width})'))
   await page.click('#pExit');await page.click('#theme')
-  await page.set_viewport_size({'width':390,'height':844});await page.goto('http://127.0.0.1:8000/',wait_until='networkidle');await page.wait_for_function('!!window.HDBAtlas');await page.wait_for_timeout(700);await page.screenshot(path=str(ROOT/'work'/'mobile.png'))
+  await page.set_viewport_size({'width':390,'height':844});await page.goto(os.environ.get('HDB_PREVIEW_URL','http://127.0.0.1:8000/'),wait_until='networkidle');await page.wait_for_function('!!window.HDBAtlas');await page.wait_for_timeout(700);await page.screenshot(path=str(ROOT/'work'/'mobile.png'))
   print('MOBILE',await page.evaluate('({width:innerWidth,scroll:document.documentElement.scrollWidth})'))
   print('ERRORS',json.dumps(errors));await browser.close()
 asyncio.run(run())

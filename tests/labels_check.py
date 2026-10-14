@@ -5,7 +5,7 @@ ROOT=Path(__file__).resolve().parents[1];(ROOT/'work').mkdir(exist_ok=True)
 async def run():
  async with async_playwright() as p:
   b=await p.chromium.launch(executable_path=os.environ.get('CHROMIUM_PATH','/usr/bin/chromium'),headless=True,args=['--no-sandbox']);page=await b.new_page(viewport={'width':1440,'height':1000});errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
-  await page.goto('http://127.0.0.1:8000/',wait_until='networkidle');await page.wait_for_function('!!window.HDBAtlas');await page.wait_for_timeout(700)
+  await page.goto(os.environ.get('HDB_PREVIEW_URL','http://127.0.0.1:8000/'),wait_until='networkidle');await page.wait_for_function('!!window.HDBAtlas');await page.wait_for_timeout(700)
   types=await page.evaluate('HDBAtlas.meta.types');assert '1 ROOM' in types and 'MULTI-GENERATION' in types and 'Others' not in types;print('ORIGINAL TYPES',types)
   await page.locator('#market').scroll_into_view_if_needed();await page.wait_for_timeout(600)
   assert await page.locator('#market h3').inner_text()=='Monthly Median Resale Price Trend';assert not await page.locator('#trendSubtitle').is_visible();assert '$' not in ''.join(await page.locator('#trend .grid+text').all_text_contents());assert 'Monthly Median Sale Prices ($)' in await page.locator('#trend').text_content();assert '$' in await page.locator('#trendExtrema').inner_text()

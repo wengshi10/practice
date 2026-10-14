@@ -1,0 +1,13 @@
+work/
+__pycache__/
+datasets/
+.env*
+dist/metadata.json
+dist/transactions.json
+dist/accessibility.json
+
+# Protect ignored local data left in the previous layout after a pull.
+hdb-atlas/work/
+hdb-atlas/datasets/
+hdb-atlas/.env*
+hdb-atlas/dist/*.json

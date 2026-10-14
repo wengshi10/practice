@@ -4,7 +4,7 @@
 
 ## Open the webpage
 
-The public GitHub branch contains source only. Keep your six original CSV/GeoJSON files locally in `datasets`, then run `python scripts/prepare_data.py datasets` before starting the server. Run the coordinate preparation commands below to enable school markers and the new accessibility charts. All uploaded and derived data assets remain excluded from Git.
+The public GitHub branch contains source only. Keep your six original CSV/GeoJSON files locally in the repository-root `datasets`, then run `python scripts/prepare_data.py datasets` before starting the server. Run the coordinate preparation commands below to enable school markers and the new accessibility charts. All uploaded and derived data assets remain excluded from Git.
 
 Python 3 is sufficient:
 
@@ -103,3 +103,11 @@ Monthly price and price/m² trend titles and axes use the requested descriptive 
 ## Copy and methodology simplification
 
 KPI descriptions use brief median definitions. The chart legend is boxed, playback is labelled Play, quick-comparison buttons and the requested narrative/coverage text are removed from the main page. Coordinate coverage remains available in Data & Methodology. The Flat Model bar chart now ranks median **total resale price (SGD)** rather than median price/m², matching its requested caption; this uses the same transaction data and keeps the minimum five-sale rule, disclosed on hover. Accessibility axes and property-map labels use the latest requested wording. The methodology dialog follows the supplied content, with the corrected definition that outliers are beyond the whiskers, not merely beyond Q1/Q3 boxes. No data preparation or geocoding rerun is needed.
+
+## Repository layout
+
+The webpage now lives directly in the `practice` repository root. Run all commands above from `practice`; no `cd hdb-atlas` step is needed.
+
+## Updating an existing local checkout
+
+After pulling this restructuring, move any remaining ignored local contents from `hdb-atlas/datasets`, `hdb-atlas/work` and generated JSON files from `hdb-atlas/dist` to the matching root folders. Preserve `work/onemap-cache.json` to avoid repeating geocoding. See `MIGRATION.md` for safe PowerShell commands that refuse to overwrite files.

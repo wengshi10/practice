@@ -1,7 +1,0 @@
-work/
-__pycache__/
-datasets/
-.env*
-dist/metadata.json
-dist/transactions.json
-dist/accessibility.json

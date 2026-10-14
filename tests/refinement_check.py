@@ -7,7 +7,7 @@ async def run():
  async with async_playwright() as p:
   browser=await p.chromium.launch(executable_path=os.environ.get('CHROMIUM_PATH','/usr/bin/chromium'),headless=True,args=['--no-sandbox'])
   page=await browser.new_page(viewport={'width':1440,'height':1000});errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
-  await page.goto('http://127.0.0.1:8000/',wait_until='networkidle');await page.wait_for_function('!!window.HDBAtlas');await page.wait_for_timeout(700)
+  await page.goto(os.environ.get('HDB_PREVIEW_URL','http://127.0.0.1:8000/'),wait_until='networkidle');await page.wait_for_function('!!window.HDBAtlas');await page.wait_for_timeout(700)
   assert await page.locator('.masthead .brand').inner_text() == 'HDB Singapore'
   assert await page.locator('.filter-title').count()==0
   assert await page.locator('[data-value="index"]').count()==0
@@ -41,7 +41,7 @@ async def run():
   for _ in range(5):await page.click('#pNext')
   await page.click('#amenityViews [data-view="distance"]');await page.wait_for_timeout(700);await page.screenshot(path=str(ROOT/'work/refined-access-720.png'))
   await page.click('#amenityViews [data-view="age"]');await page.wait_for_timeout(700);await page.screenshot(path=str(ROOT/'work/refined-age-720.png'))
-  await page.click('#pExit');await page.set_viewport_size({'width':390,'height':844});await page.goto('http://127.0.0.1:8000/',wait_until='networkidle');await page.wait_for_function('!!window.HDBAtlas');await page.wait_for_timeout(700)
+  await page.click('#pExit');await page.set_viewport_size({'width':390,'height':844});await page.goto(os.environ.get('HDB_PREVIEW_URL','http://127.0.0.1:8000/'),wait_until='networkidle');await page.wait_for_function('!!window.HDBAtlas');await page.wait_for_timeout(700)
   assert await page.evaluate('document.documentElement.scrollWidth')==390
   print('ERRORS',errors);assert not errors;await browser.close()
 asyncio.run(run())
