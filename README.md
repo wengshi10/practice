@@ -1,2 +1,0 @@
-# practice
-data visualization demo
