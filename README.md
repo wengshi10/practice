@@ -1,33 +1,185 @@
-# What Makes an HDB Flat Expensive?
+# 🏢 SC4024 Data Visualization & Visual Analytics Project
 
-**HDB Singapore** is a standalone interactive webpage telling the story of Singapore resale housing. It is built from the six supplied datasets, independently of earlier branch work. The webpage has no framework, CDN, external basemap or runtime internet dependency. User-approved OneMap geocoding enriches the uploaded block and school addresses during preparation; prices and amenity records still come only from the uploads.
+## What Makes an HDB Flat Expensive?
 
-## Open the webpage
+**Exploring Property Characteristics, Location, Accessibility and Neighbourhood Amenities in Singapore**
 
-The public GitHub branch contains source only. Keep your six original CSV/GeoJSON files locally in the repository-root `datasets`, then run `python scripts/prepare_data.py datasets` before starting the server. Run the coordinate preparation commands below to enable school markers and the new accessibility charts. All uploaded and derived data assets remain excluded from Git.
+- **Course:** NTU SC4024 Data Visualization & Visual Analytics
+- **Webpage:** HDB Singapore
+- **Coverage:** January 2017–October 2026 in the supplied transaction dataset; 2026 is incomplete.
+- **Technology:** HTML, CSS, vanilla JavaScript, SVG and Canvas; Python 3 standard-library preparation scripts; OneMap Search for approved address geocoding.
 
-Python 3 is sufficient:
+## Executive Overview & Core Problem Statement
 
-```sh
-python -m http.server 8000 --bind 127.0.0.1 --directory dist
+Singapore HDB resale prices vary across property characteristics, location and neighbourhood accessibility. This interactive storytelling webpage explores how remaining lease, floor area, building age, storey, flat type, town and nearby amenities are associated with those differences.
+
+Six connected chapters guide viewers from market-wide trends to property-level trade-offs and neighbourhood comparisons. Coordinated filters, animated charts, map exploration and presentation controls support a university project and a six-minute presentation.
+
+The analysis uses the six supplied datasets. OneMap enriches uploaded addresses with coordinates only. Associations are descriptive: the webpage does not estimate causal amenity premiums, predict future prices or model depreciation, mortgage costs or interest rates.
+
+## Repository Architecture
+
+```text
+practice/
+├── README.md
+├── MIGRATION.md                  # Safe migration from the former hdb-atlas folder
+├── PRESENTATION_GUIDE.md          # Six-minute walkthrough and report notes
+├── REFINEMENT_NOTES.md
+├── .gitignore
+├── dist/
+│   ├── index.html                # Webpage structure
+│   ├── style.css                 # Responsive layout, themes and animations
+│   ├── app.js                    # Visualizations, interactions and statistics
+│   ├── metadata.json             # Locally generated; excluded from Git
+│   ├── transactions.json         # Locally generated; excluded from Git
+│   └── accessibility.json        # Locally generated; excluded from Git
+├── scripts/
+│   ├── prepare_data.py           # Prepare the six uploaded datasets
+│   ├── geocode_onemap.py         # Resolve and cache block/school coordinates
+│   └── build_accessibility.py    # Compute nearest-amenity distances
+├── tests/                        # Optional browser verification scripts
+├── datasets/                     # Local source CSV/GeoJSON files; excluded from Git
+└── work/                         # Local preparation outputs and coordinate cache
+    └── onemap-cache.json         # Preserve this to avoid repeating geocoding
 ```
 
-Open **http://127.0.0.1:8000/**. Serve the files over HTTP rather than opening `index.html` directly, because the page fetches its local JSON data. Any static host can serve the `dist` folder.
+The public branch contains code and documentation. Source datasets, generated JSON and geocoding caches are excluded from Git. Run commands from the repository root, `practice`.
 
-## Six connected chapters
+## Quickstart & Local Setup Guide
 
-1. Monthly price trends, price per square metre, and annual percentage-growth bars relative to 2017.
-2. Singapore planning boundaries with town price symbols and a linked ranking.
-3. Transaction scatterplot: lease, floor area, and building age; horizontal drag selects a property range.
-4. Storey-band price distributions, with a building-age selector.
-5. Town × flat-type heatmap, plus model comparisons.
-6. MRT exits, hawker locations, primary-school markers, common-cohort amenity-distance boxplots, and lease/accessibility bubbles with a linked block map.
+### 1. Obtain the source code
 
-Shared period, flat-type and town filters support multiple selections and update exact statistics, animated charts and CSV export. The context ranking retains all towns. The matrix retains all town/type combinations and highlights the selection. The time chart respects selected periods, leaves gaps between unselected years, and uses a reveal cursor for playback without changing the filtered transaction cohort. The amenity inventory follows directly named selected towns unless a planning area is explicitly chosen. Its points remain snapshot records, independently of the price period.
+Open PowerShell in the parent folder where you want the project, then run:
 
-Dark mode, responsive layouts, scroll entrances, chart transitions, hover details, map pan/zoom, timeline playback and a six-minute presentation view are included. Chapter 6 has presentation subviews for the amenity map, price/distance distributions and ageing/accessibility bubbles. Presentation arrow keys move between chapters; the timed tour can pause or resume. This is a webpage, not a generated video. Narration must be recorded by the students themselves.
+```powershell
+git clone --branch feat/hdb-resale-story-20261013 --single-branch https://github.com/wengshi10/practice.git
+cd practice
+py --version
+```
 
-## Data integrity
+If you already have the repository, open PowerShell inside your existing `practice` folder instead:
+
+```powershell
+git switch feat/hdb-resale-story-20261013
+git pull --ff-only
+```
+
+For an older checkout with local files inside `hdb-atlas`, follow [MIGRATION.md](MIGRATION.md) before preparing data. Existing generated files and the coordinate cache can be reused.
+
+### 2. Add the six source datasets locally
+
+Create a `datasets` folder if needed:
+
+```powershell
+New-Item -ItemType Directory -Path datasets -Force
+```
+
+Place these supplied files inside it:
+
+| File | Purpose |
+| --- | --- |
+| `resale_flat_prices_based_on_registration_date_from_jan_2017_onwards.csv` | Resale transactions and flat characteristics |
+| `HDBPropertyInformation.csv` | Building completion years and property information |
+| `Generalinformationofschools.csv` | School addresses and classifications |
+| `LTAMRTStationExitGEOJSON.geojson` | MRT exit locations |
+| `HawkerCentresGEOJSON.geojson` | Hawker locations and status |
+| `MasterPlan2025PlanningAreaBoundaryNoSea.geojson` | Planning-area boundaries |
+
+The assignment PDF and Word documents are project references, not analytical datasets.
+
+### 3. Prepare the webpage data
+
+For a fresh setup, run these commands in order:
+
+```powershell
+py scripts\prepare_data.py .\datasets
+py scripts\geocode_onemap.py --workers 4
+py scripts\build_accessibility.py
+```
+
+The preparation scripts use Python's standard library; no Streamlit, Plotly, Pandas or npm installation is required. Geocoding needs internet access and can take considerable time because it queries thousands of addresses. It saves progress in `work/onemap-cache.json`; rerunning resumes from saved results. Ambiguous matches are excluded rather than guessed.
+
+If OneMap requires authentication, the script accepts an optional `ONEMAP_TOKEN` environment variable. Keep tokens out of source control.
+
+If all three generated JSON files already exist in `dist`, skip preparation and start the server. Re-running `prepare_data.py` removes the previous accessibility output, so run `build_accessibility.py` afterward to regenerate it using the existing cache.
+
+### 4. Open the webpage
+
+```powershell
+py -m http.server 8000 --bind 127.0.0.1 --directory dist
+```
+
+Open **http://localhost:8000/** in your browser. Keep PowerShell open while viewing; press **Ctrl+C** to stop the server. Use **Ctrl+F5** after an update.
+
+Serve the webpage over HTTP because it fetches local JSON files. Opening `index.html` directly is insufficient. On macOS/Linux, use `python3` in place of `py`.
+
+## Dashboard User Guide & Interpretive Framework
+
+### Shared Controls and Summary Metrics
+
+Select multiple periods, towns and flat types to update coordinated charts and CSV export. The scatterplot also supports horizontal drag selection of a property range. Hover for details, switch between light and dark themes, and use presentation mode for a guided walkthrough.
+
+| Metric | Calculation |
+| --- | --- |
+| Median resale price | Median transaction resale price among filtered sales |
+| Median price / m² | Median of each filtered sale's resale price divided by floor area |
+| Median remaining lease | Median recorded lease months divided by 12 |
+
+These summaries use all filtered transactions. Median price/m² is calculated from transaction-level ratios, rather than dividing median price by median area.
+
+### Chapter 1: The Market
+
+Monthly trend lines compare resale price or price/m² across flat categories. Annual bars show percentage change in annual median price relative to 2017; they are not year-on-year growth rates. A dashed 2026 border signals incomplete coverage. Playback progressively reveals the existing trend without changing the selected sales cohort.
+
+### Chapter 2: Location
+
+A planning-area map and linked town ranking compare town-level median prices. A sequential blue palette distinguishes lower and higher values. Unselected towns are grey, while the ranking retains context across towns. Map symbols represent named town aggregates, not individual flat locations.
+
+### Chapter 3: Property Characteristics
+
+The transaction scatterplot explores remaining lease, floor area or building age against price. Drag horizontally to select a range and update linked views. The fitted line and R² use all eligible filtered sales; up to 2,400 transaction dots are displayed for performance. The fitted relationship is descriptive.
+
+### Chapter 4: Storey and Price Distributions
+
+Tukey boxplots compare prices across storey bands, with a building-age selector. Boxes show Q1–Q3 and the median; whiskers end at observed values within 1.5×IQR fences. Points beyond the whiskers are outliers. Distribution overlap helps assess how much variation remains within each group.
+
+### Chapter 5: Town, Flat Type and Model
+
+A town-by-flat-type heatmap compares median values across combinations and highlights the active selection. Two panels keep all 26 towns visible. The flat-model chart ranks median total resale price in SGD for the ten leading eligible models, requiring at least five sales per model.
+
+### Chapter 6: The Neighbourhood
+
+Explore MRT exits, hawker centres and geocoded primary schools on the amenity map. Switch among three related views:
+
+- **Amenity map:** Explore uploaded amenity locations and neighbourhood context.
+- **Distance distributions:** Compare price/m² across common nearest-amenity distance bands, switching between MRT exits, primary schools and hawker centres while preserving the same complete-coordinate sales cohort.
+- **Ageing and accessibility:** Compare lease groups and distance bands using aggregated price/m² bubbles and a linked block map. Points have equal size by default; optional sizing encodes transaction counts by area.
+
+Accessibility comparisons have their own year and building-age selectors while sharing town, flat type and property-range selections. Distances measure straight-line proximity, not walking routes. Later amenity snapshots cannot reconstruct historical availability, and price differences do not establish causation.
+
+## Data Ingestion & Spatial Feature Engineering Pipeline
+
+```text
+Six supplied CSV/GeoJSON datasets
+                  |
+          prepare_data.py
+                  |
+      metadata.json + transactions.json
+                  |
+     geocode_onemap.py + OneMap Search
+                  |
+       work/onemap-cache.json
+                  |
+       build_accessibility.py
+                  |
+          accessibility.json
+                  |
+    Local HTML/CSS/JavaScript webpage
+```
+
+`prepare_data.py` normalizes records, joins building information and records SHA-256 source fingerprints. `geocode_onemap.py` validates address matches and caches coordinates. `build_accessibility.py` computes nearest-amenity distances in Singapore's SVY21 projection and records coordinate coverage. The webpage requires no runtime internet connection once its local data is prepared.
+
+## Data Integrity & Analytical Limitations
 
 - 242,259 transactions, January 2017 to October 2026. 2026 is partial.
 - 242,256 records join to building information on normalized block + street. Three unmatched block 82 MacPherson Lane sales remain in price analysis.
@@ -47,40 +199,46 @@ Dark mode, responsive layouts, scroll entrances, chart transitions, hover detail
 - Amenities are later snapshots and do not reconstruct historical accessibility.
 - No causal effects, inflation adjustment, repeat-sales indices, or predictions are claimed.
 
-## Reproduce the preparation
 
-Place the six original uploaded CSV/GeoJSON files in one folder and run:
+## Troubleshooting Common Setup Issues
 
-```sh
-python scripts/prepare_data.py /path/to/uploaded-datasets
-```
-
-The script uses the Python standard library only. It writes `dist/metadata.json` (including SHA-256 source fingerprints) and the complete coded `dist/transactions.json`. `dist/app.js` documents the code-column order through metadata. The original assignment PDF and Word template inform the presentation structure and are not analytic data.
-
-## Add approved address coordinates and accessibility analysis
-
-After generating the base JSON files, run:
-
-```sh
-python scripts/geocode_onemap.py --workers 4
-python scripts/build_accessibility.py
-```
-
-The first command calls OneMap Search using only uploaded school postal codes and HDB block addresses, validates returned address fields, and caches results in `work/onemap-cache.json`. It can take several minutes. Re-running resumes from the cache. `--retry-unmatched` retries unresolved addresses. OneMap may require an account/token or impose rate limits; an optional `ONEMAP_TOKEN` environment variable supplies a token without writing it to source. API authentication failures are not treated as coordinate matches.
-
-The second command generates `dist/accessibility.json` with matched school markers, block coordinates, nearest-amenity distances and coverage. Every derived JSON asset and coordinate cache is ignored by Git. Serve the webpage after both commands finish to load the new analysis. No coordinates are substituted for unresolved addresses.
-
-The full school match count, block match count, projection validation error and unmatched addresses are recorded in the generated file. The map and price charts still work without enrichment; the accessibility panels clearly show that verified coordinates are required.
+| Issue | Action |
+| --- | --- |
+| `py` is not recognized | Install Python 3 and reopen PowerShell, or use `python` if available. |
+| Missing transaction data | Confirm source files are in `datasets`, then run `prepare_data.py`. |
+| Accessibility views are unavailable | Check `work/onemap-cache.json`, then run `build_accessibility.py` after base preparation. Geocoding is required if no coordinate cache exists. |
+| Geocoding stops or the computer sleeps | Rerun the same geocoding command; saved matches are reused. Keep the computer awake during the run. |
+| Unmatched or ambiguous addresses remain | Optionally run `py scripts\geocode_onemap.py --workers 4 --retry-unmatched` once, then rebuild accessibility. Repeated retries do not guarantee a valid match. |
+| Port 8000 is already in use | Start the server on port 8001 and open `http://localhost:8001/`. |
+| Browser shows an older version | Press Ctrl+F5 after updating. |
+| Old `hdb-atlas` folder remains | Follow `MIGRATION.md`, verify the webpage works, and remove the folder only after checking that it is empty. |
 
 ## Verification
 
-JavaScript syntax checked with `node --check dist/app.js`. Browser validation covers exact count/median baselines, combined filtering against an independent predicate, scatter brushing and clearing, theme switching, methodology dialog, presentation navigation, and a 390px mobile viewport with no page-wide overflow. Refinement checks verify rounded ticks, annual growth values and dashed 2026 styling, preservation of the line path during playback, standard boxplot fences and outliers, all 179 school markers, identical amenity comparison cohort counts, linked distance selection and the new 720p presentation subviews. Nearest distances are independently checked with a KD-tree implementation to within the 0.005m rounding precision. There were no browser JavaScript errors.
+JavaScript syntax can be checked with:
 
-Optional Playwright checks are in `tests/browser_check.py`; edit the browser path and output paths for another machine. The production webpage has no dependency on Playwright.
+```powershell
+node --check dist/app.js
+```
 
-See `PRESENTATION_GUIDE.md` for a six-minute walkthrough and report notes.
+Node is optional for verification and is not required to serve the webpage. Optional browser checks in `tests` use Playwright and may need browser/output paths adjusted for your machine.
 
-## Dataset references supplied in `infrormation.docx`
+Existing verification covers median baselines, combined filters, brushing, themes, the methodology dialog, presentation navigation, mobile layout, annual growth, playback stability, Tukey boxplots, school markers and shared amenity cohorts. Nearest distances were independently checked against a KD-tree calculation. Verification results apply to the prepared dataset used for those checks; coordinate coverage on another machine may differ.
+
+## Academic Project Alignment
+
+| Project Area | Implementation |
+| --- | --- |
+| Visual variety | Animated trends, growth bars, maps, rankings, scatterplots, boxplots, heatmaps and aggregated bubbles |
+| Coordinated interaction | Multiple-selection filters, property-range brushing, linked highlighting and amenity selectors |
+| Spatial analysis | Validated OneMap coordinates, planning-area inventories and nearest-amenity distances |
+| Data storytelling | Six chapters, hover details, timeline playback and presentation controls |
+| Reproducibility | Standard-library preparation scripts, cached geocoding and source fingerprints |
+| Analytical transparency | Methodology dialog, explicit cohort rules, incomplete-year styling and descriptive limitations |
+
+See [PRESENTATION_GUIDE.md](PRESENTATION_GUIDE.md) for the six-minute walkthrough. Students should record their own narration; the webpage does not generate a presentation video. This table describes implemented capabilities rather than guaranteeing a rubric score.
+
+## Dataset References & Course Attribution
 
 These links document the uploaded datasets' provenance; no replacement datasets are fetched by the webpage.
 
@@ -92,22 +250,5 @@ These links document the uploaded datasets' provenance; no replacement datasets 
 - [General information of schools](https://data.gov.sg/datasets?query=moe+general+information+of+school&resultId=d_688b934f82c1059ed0a6993d2a829089)
 - [OneMap](https://www.onemap.gov.sg/) — user-approved address-coordinate lookup only.
 
-## Latest requested usability edits
 
-The masthead uses only HDB Singapore; the hero names SC4024 Data Visualisation. All original flat types are retained, including 1 ROOM and MULTI-GENERATION; there is no combined Others category. The vertical trend legend supports selection, and visible monthly extrema are calculated only from selected categories. A least-squares best-fit line uses every eligible filtered sale, not just sampled scatter dots; the displayed R² is descriptive. Boxplot medians are labelled directly. The town/type matrix uses two side-by-side panels, showing all 26 towns without an internal vertical scrollbar. Earlier accessibility years compare historical sale prices with later amenity snapshots, so they do not reconstruct historical availability. Typography follows chart title > axis title > numeric tick label, and light-mode explanatory text is black.
-
-## Latest label and emphasis update
-
-Monthly price and price/m² trend titles and axes use the requested descriptive labels. Trend and scatter numeric ticks omit currency symbols; extrema and median annotations retain them. Lowest summaries are red and highest summaries are green, with contrasting dark-theme colours. The original flat categories are restored without changing any prepared data files. Unselected towns use neutral grey symbols and ranking bars. The observed-difference and ageing-comparison narrative blocks are removed from the webpage; the remaining methodology still documents analytical limitations. Building age is labelled at Sale rather than Scale, because it is transaction year minus completion year.
-
-## Copy and methodology simplification
-
-KPI descriptions use brief median definitions. The chart legend is boxed, playback is labelled Play, quick-comparison buttons and the requested narrative/coverage text are removed from the main page. Coordinate coverage remains available in Data & Methodology. The Flat Model bar chart now ranks median **total resale price (SGD)** rather than median price/m², matching its requested caption; this uses the same transaction data and keeps the minimum five-sale rule, disclosed on hover. Accessibility axes and property-map labels use the latest requested wording. The methodology dialog follows the supplied content, with the corrected definition that outliers are beyond the whiskers, not merely beyond Q1/Q3 boxes. No data preparation or geocoding rerun is needed.
-
-## Repository layout
-
-The webpage now lives directly in the `practice` repository root. Run all commands above from `practice`; no `cd hdb-atlas` step is needed.
-
-## Updating an existing local checkout
-
-After pulling this restructuring, move any remaining ignored local contents from `hdb-atlas/datasets`, `hdb-atlas/work` and generated JSON files from `hdb-atlas/dist` to the matching root folders. Preserve `work/onemap-cache.json` to avoid repeating geocoding. See `MIGRATION.md` for safe PowerShell commands that refuse to overwrite files.
+Developed for SC4024 Data Visualization & Visual Analytics at Nanyang Technological University, Singapore. Dataset redistribution is subject to the respective providers' terms. This README does not grant a separate software or dataset licence.
