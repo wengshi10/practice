@@ -22,8 +22,7 @@ The analysis uses the six supplied datasets. OneMap enriches uploaded addresses 
 ```text
 practice/
 ├── README.md
-├── MIGRATION.md                  # Safe migration from the former hdb-atlas folder
-├── PRESENTATION_GUIDE.md          # Six-minute walkthrough and report notes
+├── PRESENTATION_GUIDE.md          # Six-minute presentation walkthrough and notes
 ├── REFINEMENT_NOTES.md
 ├── .gitignore
 ├── dist/
@@ -52,19 +51,17 @@ The public branch contains code and documentation. Source datasets, generated JS
 Open PowerShell in the parent folder where you want the project, then run:
 
 ```powershell
-git clone --branch feat/hdb-resale-story-20261013 --single-branch https://github.com/wengshi10/practice.git
+git clone --branch <branchname> --single-branch <repository git address>
 cd practice
 py --version
 ```
 
-If you already have the repository, open PowerShell inside your existing `practice` folder instead:
+If you already have the repository, open PowerShell inside your existing folder instead:
 
 ```powershell
-git switch feat/hdb-resale-story-20261013
+git switch <branchname>
 git pull --ff-only
 ```
-
-For an older checkout with local files inside `hdb-atlas`, follow [MIGRATION.md](MIGRATION.md) before preparing data. Existing generated files and the coordinate cache can be reused.
 
 ### 2. Add the six source datasets locally
 
@@ -248,7 +245,7 @@ These links document the uploaded datasets' provenance; no replacement datasets 
 - [URA planning-area boundaries](https://data.gov.sg/datasets?query=URA+Planning+Area+Boundaries&resultId=d_2cc750190544007400b2cfd5d7f53209)
 - [Hawker centres](https://data.gov.sg/datasets?agencies=National+Environment+Agency+(NEA)&resultId=d_4a086da0a5553be1d89383cd90d07ecd)
 - [General information of schools](https://data.gov.sg/datasets?query=moe+general+information+of+school&resultId=d_688b934f82c1059ed0a6993d2a829089)
-- [OneMap](https://www.onemap.gov.sg/) — user-approved address-coordinate lookup only.
+- [OneMap](https://www.onemap.gov.sg/) for address-coordinate lookup only
 
 
-Developed for SC4024 Data Visualization & Visual Analytics at Nanyang Technological University, Singapore. Dataset redistribution is subject to the respective providers' terms. This README does not grant a separate software or dataset licence.
+Developed for SC4024 Data Visualization course at Nanyang Technological University, Singapore. Dataset redistribution is subject to the respective providers' terms. This README does not grant a separate software or dataset licence.
